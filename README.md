@@ -1,6 +1,6 @@
 
 # AdvImmune
-This repository is an implementation of our proposed CoupledGNN model in the following paper:
+This repository is an implementation of our proposed AdvImmune model in the following paper:
 
 ```
 Shuchang Tao, Huawei Shen, Qi Cao, Liang Hou, Xueqi Cheng. 2021. Adversarial Immunization
