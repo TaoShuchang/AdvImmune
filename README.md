@@ -1,23 +1,26 @@
 
-# AdvImmune
-This repository is an implementation of our proposed AdvImmune model in the following paper:
+# Adversarial Immunization
+for Improving Certifiable Robustness on Graphs
+This repository is an implementation of the following paper:
 
-```
-Shuchang Tao, Huawei Shen, Qi Cao, Liang Hou, Xueqi Cheng. 2021. Adversarial Immunization
-for Improving Certifiable Robustness on Graphs. In WSDM'21, Marck 8-12, 2021, Jerusalem, 
-Israel, 9 pages.
-​```
-```
+**[Adversarial Immunization
+for Improving Certifiable Robustness on Graphs](https://arxiv.org/abs/2007.09647)**
 
-AdvImmune vaccinate an affordable fraction of node pairs, connected or unconnected, to improve the certifiable robustness of the graph against any admissible adversarial attack.
+By Shuchang Tao, Huawei Shen, Qi Cao, Liang Hou and Xueqi Cheng
 
-For more details, you can download this paper [Here](https://arxiv.org/abs/2007.09647)
+Published at WSDM'21, March 2021 (virtual event)
+
+*Adversarial immunization* vaccinate an affordable fraction of node pairs, connected or unconnected, to improve the certifiable robustness of the graph against any admissible adversarial attack.
+
+
 
 ## Requirements
 
 Python 3.6
 
 Pytorch 1.1.0
+
+
 
 ## Usage
 ***Example Usage***
@@ -28,8 +31,11 @@ For detailed description of all parameters, you can run
 
 `python -u main.py --help`
 
+
+
 ## Cite
-Please cite our paper if you use this code in your own work:
+
+If you find our work usefuol, please cite:
 ```
 @inproceedings{tao2021advimmune,
   title={Adversarial Immunization for Improving Certifiable Robustness on Graphs},
