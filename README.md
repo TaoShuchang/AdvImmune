@@ -3,7 +3,8 @@
 This repository is an implementation of our proposed CoupledGNN model in the following paper:
 
 ```
-Shuchang Tao, Huawei Shen, Qi Cao, Liang Hou, Xueqi Cheng. 2021. Adversarial Immunization for Improving Certifiable Robustness on Graphs. In WSDM'21, Marck 8-12, 2021, Jerusalem, Israel, 9 pages.
+Shuchang Tao, Huawei Shen, Qi Cao, Liang Hou, Xueqi Cheng. 2021. Adversarial Immunization
+for Improving Certifiable Robustness on Graphs. In WSDM'21, Marck 8-12, 2021, Jerusalem, Israel, 9 pages.
 ​```
 ```
 
