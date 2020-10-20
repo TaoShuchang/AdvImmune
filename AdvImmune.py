@@ -38,8 +38,8 @@ def grad_adv_immune(adj, ppr_adj_changing, cur_adj_controlled, exceed_local, cur
     while control_num < con_budget:
         # 需不需要考虑局部控制
         local_flag = True
-        if (control_num-cur_control_num) % 20 == 0:
-            print('control edges num:', control_num)
+        if (control_num-cur_control_num) % 1 == 0:
+            print('immune edges num:', control_num)
         # 控制边后，扰动的新矩阵  
         # A^ = A + A' * Ac
         cnt = 0
