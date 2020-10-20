@@ -1,6 +1,5 @@
 
 # Adversarial Immunization
-for Improving Certifiable Robustness on Graphs
 This repository is an implementation of the following paper:
 
 **[Adversarial Immunization

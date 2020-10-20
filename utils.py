@@ -5,38 +5,6 @@ import torch
 import random
 from scipy.sparse.linalg import gmres
 
-def correction_term(adj, opt_fragile, fragile):
-    """
-    Computes correction term needed to map x_v to ppr_v.
-    Parameters
-    ----------
-    adj : sp.spmatrix, shape [n, n]
-        Sparse adjacency matrix.
-    opt_fragile : np.ndarray, shape [?, 2]
-        Optimal fragile edges.
-    fragile : np.ndarray, shape [?, 2]
-        Fragile edges that are under our control.
-    Returns
-    -------
-    correction : np.ndarray, shape [n]
-        Correction term.
-    """
-    n = adj.shape[0]
-    if len(opt_fragile) > 0:
-        adj_all = adj + edges_to_sparse(fragile, n)
-        adj_all[adj_all != 0] = 1
-        deg_all = adj_all.sum(1).A1
-
-        g_chosen = edges_to_sparse(opt_fragile, n, 1 - 2 * adj[opt_fragile[:, 0], opt_fragile[:, 1]].A1)
-        n_removed = -g_chosen.multiply(g_chosen == -1).sum(1).A1
-        n_added = g_chosen.multiply(g_chosen == 1).sum(1).A1
-        n_to_add = edges_to_sparse(fragile, n, 1 - adj[fragile[:, 0], fragile[:, 1]].A1).sum(1).A1
-        correction = 1 - (n_removed + (n_to_add - n_added)) / deg_all
-    else:
-        correction = np.ones(n)
-
-    return correction
-
 @numba.jit(nopython=True)
 def _top_k(indices, indptr, data, k_per_row):
     """
@@ -121,16 +89,6 @@ def flip_edges(adj, edges):
         for e in edges:
             adj_flipped[e[0], e[1]] = 1 - adj[e[0], e[1]]
     return adj_flipped
-
-
-def compute_adj_changing(adj, opt_fragile):
-    n = adj.shape[0]
-    adj_changing = torch.zeros([n, n])
-
-    for edge in opt_fragile:
-        adj_changing[edge[0],edge[1]] = 1 - 2*adj[edge[0],edge[1]]
-    del adj, opt_fragile
-    return adj_changing
 
 
 def propagation_matrix(adj, alpha=0.85, sigma=1):
@@ -356,117 +314,6 @@ def unravel_index(index, array_shape):
     return rows, cols
 
 
-def immune_edge_control(adj_controlled, sort_edge, con_local_budget, con_more_num):
-    ori_num = np.where(adj_controlled==0)[0].shape[0]
-    idx = np.array(sort_edge)[:,0]
-
-    for i in idx:
-        adj_controlled[i[0],i[1]] = 0
-        if np.where(adj_controlled[i[0]] == 0)[0].shape[0] > con_local_budget[i[0]]:
-            adj_controlled[i[0],i[1]] = 1
-
-        cur_num = np.where(adj_controlled==0)[0].shape[0]
-        if cur_num == ori_num+con_more_num:
-            
-            break
-
-    return adj_controlled
-
-
-def split(labels, n_per_class=20, seed=0):
-    np.random.seed(seed)
-    nc = labels.max() + 1
-
-    split_train, split_val = [], []
-    for l in range(nc):
-        perm = np.random.permutation((labels == l).nonzero()[0])
-        split_train.append(perm[:n_per_class])
-        split_val.append(perm[n_per_class:2 * n_per_class])
-
-    split_train = np.random.permutation(np.concatenate(split_train))
-    split_val = np.random.permutation(np.concatenate(split_val))
-
-    assert split_train.shape[0] == split_val.shape[0] == n_per_class * nc
-
-    split_test = np.setdiff1d(np.arange(len(labels)), np.concatenate((split_train, split_val)))
-
-    return split_train, split_val, split_test
-
-
-def compute_grad_matrix(control_all, grad_all, con_budget_local, n):
-    # 放入矩阵中 con_local=[[grad]] n*n矩阵每个元素都是grad
-    con_local = np.zeros((n,n))
-    for j in range(len(control_all)):
-        control = control_all[j]
-        grad = grad_all[j]
-        for k in range(len(grad)):
-            con_local[control[k]] = grad[k]
-            
-    # 满足控制的局部约束
-    for j in range(n):
-        con = con_local[j]
-        con_budget_l = con_budget_local[j].astype('int32')
-        if np.where(con!=0)[0].shape[0] > con_budget_l:
-            more = (np.where(con!=0)[0].shape[0] - con_budget_l).astype('int32')
-            idx_ord = np.argsort(con)[::-1]
-            for k in range(con_budget_l, con_budget_l+more):
-                con[idx_ord[k]] = 0
-            con_local[j] = con
-    
-    return con_local
-
-def compute_sort_edge(con_local):
-    control_edges = {}
-    row = np.where(con_local!=0)[0]
-    col = np.where(con_local!=0)[1]
-    control_edges={(row[i],col[i]): con_local[row[i],col[i]] for i in range(len(row))}
-    sort_control_edges = sorted(control_edges.items(), key=lambda item:item[1], reverse=True)
-
-    return sort_control_edges
-
-
-def worstcase_class(ppr_flipped, labels, logits):
-    n, nc = logits.shape
-    worst_margins_all = np.ones((nc, nc, n)) * np.inf
-
-    for c1 in range(nc):
-        for c2 in range(nc):
-            if c1 != c2:
-                worst_margins_all[c1, c2] = (ppr_flipped[(c1,c2)].detach().numpy() @ (logits[:, c1] - logits[:, c2]))
-
-    # selected the reference label according to the labels vector and find the minimum among all other classes
-    worst_class = np.nanargmin(worst_margins_all[labels, :, np.arange(n)], 1)
-
-    return worst_class
-
-def compute_final_loss(loss, labels, worst_class):
-    n = labels.shape[0]
-    final_loss = torch.unsqueeze(loss[labels[0], worst_class[0]][0], 0)
-    for i in range(1,n):
-        tmp = torch.unsqueeze(loss[labels[i], worst_class[i]][i], 0)
-        final_loss = torch.cat((final_loss, tmp), 0)
-
-    return final_loss
-
-
-def bisection(adj_controlled, a, b, perturbations, epsilon):
-    def func(x):
-        return torch.clamp(adj_controlled-x, 0, 1).sum() - perturbations
-
-    miu = a
-    while ((b-a) >= epsilon):
-        miu = (a+b)/2
-        # Check if middle point is root
-        if (func(miu) == 0.0):
-                break
-        # Decide the side to repeat the steps
-        if (func(miu)*func(a) < 0):
-            b = miu
-        else:
-            a = miu
-        # print("The value of root is : ","%.4f" % miu)
-    return miu
-
 
 def projection(adj_controlled, con_budget):
     # projected = torch.clamp(self.adj_controlled, 0, 1)
@@ -477,38 +324,6 @@ def projection(adj_controlled, con_budget):
         adj_controlled.data.copy_(torch.clamp(adj_controlled.data - miu, min=0, max=1))
     else:
         adj_controlled.data.copy_(torch.clamp(adj_controlled.data, min=0, max=1))
-    return adj_controlled
-
-def random_sample(adj, adj_controlled, ppr_adj_changing, logits, labels, con_budget, alpha):
-    K = 100
-    n,nc = logits.shape
-    best_loss = -1000*torch.ones(n)
-    with torch.no_grad():
-        s = adj_controlled.detach().numpy()
-        for i in range(K):
-            sampled = np.random.binomial(1, s)
-            ppr_flipped = {}
-            loss = {}
-            print(sampled.sum())
-            if sampled.sum() > con_budget:
-                continue
-            adj_controlled.copy_(torch.Tensor(sampled))
-            for c1 in range(nc):
-                for c2 in range(nc):
-                    if c1 != c2:
-                        modified_adj = adj + torch.mul(ppr_adj_changing[(c1,c2)]['changing'], adj_controlled)
-                        ppr_flipped[(c1,c2)] = propagation_matrix(adj=modified_adj, alpha=alpha)
-                        tmp_re = torch.from_numpy(logits[:,c1] - logits[:,c2]).float()
-                        loss[c1,c2] = ppr_flipped[(c1,c2)] @ tmp_re
-
-            worst_class = worstcase_class(ppr_flipped, labels, logits)
-            final_loss = compute_final_loss(loss, labels, worst_class)
-            print(torch.sum(final_loss))
-            if torch.sum(best_loss) < torch.sum(final_loss):
-                best_loss = final_loss
-                best_s = sampled
-        adj_controlled.copy_(1 - torch.Tensor(best_s))
-
     return adj_controlled
 
 # Fix seed
