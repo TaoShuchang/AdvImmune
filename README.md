@@ -15,9 +15,13 @@ Published at WSDM'21, March 2021 (virtual event)
 
 ## Requirements
 
-Python 3.6
+- pytorch 
+- scipy
+- numpy
+- numba
+- cvxpy
 
-Pytorch 1.1.0
+
 
 
 
@@ -32,9 +36,13 @@ For detailed description of all parameters, you can run
 
 
 
+## 
+
+
+
 ## Cite
 
-If you find our work usefuol, please cite:
+If you would like to use our code, please cite:
 ```
 @inproceedings{tao2021advimmune,
   title={Adversarial Immunization for Improving Certifiable Robustness on Graphs},
