@@ -314,7 +314,6 @@ def unravel_index(index, array_shape):
     return rows, cols
 
 
-
 def projection(adj_controlled, con_budget):
     # projected = torch.clamp(self.adj_controlled, 0, 1)
     if torch.clamp(adj_controlled, 0, 1).sum() > con_budget:
