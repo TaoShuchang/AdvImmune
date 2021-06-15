@@ -3,7 +3,7 @@
 This repository is an implementation of the following paper:
 
 **[Adversarial Immunization
-for Improving Certifiable Robustness on Graphs](https://arxiv.org/abs/2007.09647)**
+for Certifiable Robustness on Graphs](https://arxiv.org/abs/2007.09647)**
 
 By Shuchang Tao, Huawei Shen, Qi Cao, Liang Hou and Xueqi Cheng
 
@@ -45,7 +45,7 @@ For detailed description of all parameters, you can run
 If you would like to use our code, please cite:
 ```
 @inproceedings{tao2021advimmune,
-  title={Adversarial Immunization for Improving Certifiable Robustness on Graphs},
+  title={Adversarial Immunization for Certifiable Robustness on Graphs},
   author={Shuchang Tao, Huawei Shen, Qi Cao and Liang Hou and Xueqi Cheng.},
   booktitle={Proceedings of the 14th ACM International Conference on Web Search and Data Mining},
   series={WSDM'21},
