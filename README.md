@@ -19,7 +19,7 @@ In this paper, we propose and formulate the **graph adversarial immunization** p
 
 
 
-<img src="./imgs/immunization_karate.pdf" />
+<img src="./imgs/immunization_karate.png" />
 
 Figure shows effect of adversarial immunization on Karate club network. Colors differentiate nodes in two classes. We use two bars to represent node’s robustness before and after immunization. The node is certified as robust (red), when its robustness > 0, otherwise as non-robust (pink). Purple circle indicates the node that becomes robust through immunization. The red edges are immune edges.
 
@@ -29,7 +29,7 @@ Figure shows effect of adversarial immunization on Karate club network. Colors d
 
 We further propose an effective algorithm, called AdvImmune, which optimizes with meta-gradient in a discrete way to circumvent the computationally expensive combinatorial optimization when solving the adversarial immunization problem. 
 
-<img src="./imgs/AdvImmune.pdf" />
+<img src="./imgs/AdvImmune.png" />
 
 The training and test process of AdvImmune.
 
