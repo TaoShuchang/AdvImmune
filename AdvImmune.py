@@ -29,7 +29,6 @@ class MyThread(threading.Thread):
 
 def grad_adv_immune(adj, ppr_adj_changing, cur_adj_controlled, exceed_local, cur_control_num, con_budget, logits, labels, alpha, con_budget_local=None, grad_flag=False, rand=None):
     
-    begin = time.time()
     n,nc = logits.shape
 
     adj_controlled = cur_adj_controlled.clone()
@@ -103,8 +102,6 @@ def grad_adv_immune(adj, ppr_adj_changing, cur_adj_controlled, exceed_local, cur
         del ppr_flipped
 
     del adj_grad, adj_grad_argmax, row_idx, col_idx
-    end = time.time()
-    print('time: ', end - begin)
     
     return adj_controlled
 

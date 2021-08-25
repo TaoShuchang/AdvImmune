@@ -51,7 +51,7 @@ def main(opts):
     # Compute immune graph matrix iteratively
     for con_ratio in np.arange(start, end, interval):
         if con_ratio > start:
-            cur_control = np.aload(output_file + '_adj_controlled_%.1f%%.npy'%((con_ratio-0.05)*100))
+            cur_control = np.aload(output_file + '_adj_controlled_%.1f%%.npy'%((con_ratio-interval)*100))
             cur_controlled = torch.Tensor(cur_control)
         cur_con_num = int(round(num * (con_ratio-interval)))
         con_budget = int(round(num * con_ratio))
