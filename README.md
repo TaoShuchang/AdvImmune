@@ -3,11 +3,7 @@
 **This repository is our Pytorch implementation of our paper:**
 
 **[Adversarial Immunization
-<<<<<<< HEAD
 for Certifiable Robustness on Graphs](https://arxiv.org/abs/2007.09647)** 
-=======
-for Certifiable Robustness on Graphs](https://arxiv.org/abs/2007.09647)**
->>>>>>> 173025a9ad6b61ffa0dfb89267e730ec2a422f88
 
 By Shuchang Tao, Huawei Shen, Qi Cao, Liang Hou and Xueqi Cheng
 
@@ -66,11 +62,7 @@ If you would like to use our code, please cite:
 ```
 @inproceedings{tao2021advimmune,
   title={Adversarial Immunization for Certifiable Robustness on Graphs},
-<<<<<<< HEAD
   author={Shuchang Tao and Huawei Shen and Qi Cao and Liang Hou and Xueqi Cheng.},
-=======
-  author={Shuchang Tao, Huawei Shen, Qi Cao and Liang Hou and Xueqi Cheng.},
->>>>>>> 173025a9ad6b61ffa0dfb89267e730ec2a422f88
   booktitle={Proceedings of the 14th ACM International Conference on Web Search and Data Mining},
   series={WSDM'21},
   year={2021},
